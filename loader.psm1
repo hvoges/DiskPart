@@ -24,4 +24,4 @@
 . $PSScriptRoot\Test-DpDiskEmpty.ps1
 . $PSScriptRoot\Merge-DpVhdDiffToParent.ps1
 . $PSScriptRoot\Get-DpvhdInfo.ps1
-. $PSScriptRoot\Get-FreeDriveLetter.ps1
+. $PSScriptRoot\Get-DPFreeDriveLetter.ps1
