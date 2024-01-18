@@ -18,7 +18,7 @@
 
 #>
 
-Function Get-FreeDriveLetter {
+Function Get-DpFreeDriveLetter {
     param( 
         [Byte][Char]$Startletter = 'C' 
     )
