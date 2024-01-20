@@ -33,6 +33,7 @@
         [Parameter(mandatory,
                    ValueFromPipeline,
                    ValueFromPipelineByPropertyName)]
+        [Alias('FullName')]
         [String]$Path 
     )
 
