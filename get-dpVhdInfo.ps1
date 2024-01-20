@@ -90,9 +90,6 @@ exit
         $VdiskInfo["DiskChain"] = $DiskChain + $parent.File
         $VdiskInfo["RootDisk"] = $Parent.File
     }
-}
-
-End {
     [PSCustomObject]$VDiskInfo
 }
 }
