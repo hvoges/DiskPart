@@ -38,12 +38,14 @@
     )
 
 Begin {    
+    $DriveRootRegEx = '(?:Dateiname|File)\w*?:\s*(?<Drive>\w:\\)'
     $DeviceIDRegEx = '(?:Device type ID|Geträtetyp-ID):\s*(?<DeviceID>\w+)'
     $StateRegEx = '(?:State|Status):\s*(?<State>\w*)'
     $VirtualSizeRegEx = '(?:virtual|virtuelle).*:\s*(?<size>\d*)\s(?<unit>\w+)'
     $PhysicalSizeRegEx = '(?:Physical|Physische).*:\s*(?<size>\d*)\s(?<unit>\w+)'
     $IsChildRegEx = '(?:is Child|ist untergeordnet).*:\s*(?<IsDiff>\w*)'
-    $ParentFilenameRegEx = '(?:Parent|Übergeordneter).*?:\s*(?<Parent>\S.*)$'
+    $ParentFilenameAsLetterRegEx = '(?:Parent|Übergeordneter).*?:\s(?<Parent>\w:.+$)'
+    $ParentFilenameAsDiskVolumeRegEx = '(?:Parent|Übergeordneter).*?:\s\\Device\\\w+\\(?<Parent>.+$)'
     $AssociatedDiskRegEx = '(?:associated|Zugeordnete).*:\s*(?<AssocDisk>\w*)$'
 }
 
@@ -67,20 +69,22 @@ exit
     }
 
     Foreach ( $line in $Data ) {
-            if ( $line -match $DeviceIDRegEx )       { $VDiskInfo["DeviceID"] = $Matches.DeviceID }
-            if ( $line -match $StateRegEx    )       { $VDiskInfo["State"] = $Matches.State }
-            if ( $line -match $VirtualSizeRegEx )    { $VDiskInfo["VirtualSize"] = [int]$Matches.size * "1$($Matches.Unit)" }
-            if ( $line -match $PhysicalSizeRegEx )   { $VdiskInfo["PhysicalSize"] = [int]$Matches.size * "1$($Matches.Unit)"}
-            if ( $line -match $IsChildRegEx )        { $VDiskInfo["IsDiff"] = if ( $Matches.IsDiff -in "Yes","Ja" ) { $true } Elseif ( $Matches.IsDiff -in "Nein","No" ) { $false } }
-            if ( $line -match $ParentFilenameRegEx ) { $VDiskInfo["ParentFile"] = $Matches.Parent }
-            if ( $line -match $AssociatedDiskRegEx ) { $VDiskInfo["AssociatedDisk"] = $Matches.AssocDisk }
+            if ( $line -match $DriveRootRegEx )                   { $VDiskInfo["FileRoot"] = $Matches.Drive }
+            if ( $line -match $DeviceIDRegEx )                    { $VDiskInfo["DeviceID"] = $Matches.DeviceID }
+            if ( $line -match $StateRegEx    )                    { $VDiskInfo["State"] = $Matches.State }
+            if ( $line -match $VirtualSizeRegEx )                 { $VDiskInfo["VirtualSize"] = [int]$Matches.size * "1$($Matches.Unit)" }
+            if ( $line -match $PhysicalSizeRegEx )                { $VdiskInfo["PhysicalSize"] = [int]$Matches.size * "1$($Matches.Unit)" }
+            if ( $line -match $IsChildRegEx )                     { $VDiskInfo["IsDiff"] = if ( $Matches.IsDiff -in "Yes","Ja" ) { $true } Elseif ( $Matches.IsDiff -in "Nein","No" ) { $false }}
+            if ( $line -match $ParentFilenameAsLetterRegEx )      { $VDiskInfo["ParentFile"] = $Matches.Parent }
+            if ( $line -match $ParentFilenameAsDiskVolumeRegEx )  { $vdiskInfo["ParentFile"] = $Vdiskinfo.FileRoot + $Matches.Parent }
+            if ( $line -match $AssociatedDiskRegEx )              { $VDiskInfo["AssociatedDisk"] = $Matches.AssocDisk }
     }
     if ( -not $VDiskInfo.ParentFile ) {
         $VdiskInfo["ParentFile"] = $VdiskInfo.File
         $VdiskInfo["DiskChain"] = $null
         $VdiskInfo["RootDisk"] = $Path
     }
-    # Get the Chain of Differencing Disks
+    # Get the Chain of Differencing Disks if parentdisk has drive-letter
     Else {
         $Parent = Get-DPVhdInfo -Path $VDiskInfo.ParentFile
         While ( $Parent.IsDiff ) {
