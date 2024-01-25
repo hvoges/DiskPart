@@ -44,8 +44,8 @@ Begin {
     $VirtualSizeRegEx = '(?:virtual|virtuelle).*:\s*(?<size>\d*)\s(?<unit>\w+)'
     $PhysicalSizeRegEx = '(?:Physical|Physische).*:\s*(?<size>\d*)\s(?<unit>\w+)'
     $IsChildRegEx = '(?:is Child|ist untergeordnet).*:\s*(?<IsDiff>\w*)'
-    $ParentFilenameAsLetterRegEx = '(?:Parent|Übergeordneter).*?:\s(?<Parent>\w:.+$)'
-    $ParentFilenameAsDiskVolumeRegEx = '(?:Parent|Übergeordneter).*?:\s\\Device\\\w+\\(?<Parent>.+$)'
+    $ParentFilenameAsLetterRegEx = '(?:Parent|bergeordneter).*?:\s(?<Parent>\w:.+$)'
+    $ParentFilenameAsDiskVolumeRegEx = '(?:Parent|bergeordneter).*?:\s\\Device\\\w+\\(?<Parent>.+$)'
     $AssociatedDiskRegEx = '(?:associated|Zugeordnete).*:\s*(?<AssocDisk>\w*)$'
 }
 
